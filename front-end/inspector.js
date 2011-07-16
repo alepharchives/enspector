@@ -160,20 +160,20 @@ var WebInspector = {
             return;
         }
         var hiddenPanels = (InspectorFrontendHost.hiddenPanels() || "").split(',');
-        if (hiddenPanels.indexOf("elements") === -1)
-            this.panels.elements = new WebInspector.ElementsPanel();
-        if (hiddenPanels.indexOf("resources") === -1)
-            this.panels.resources = new WebInspector.ResourcesPanel();
-        if (hiddenPanels.indexOf("network") === -1)
-            this.panels.network = new WebInspector.NetworkPanel();
-        if (hiddenPanels.indexOf("scripts") === -1)
-            this.panels.scripts = new WebInspector.ScriptsPanel();
-        if (hiddenPanels.indexOf("timeline") === -1)
-            this.panels.timeline = new WebInspector.TimelinePanel();
-        if (hiddenPanels.indexOf("profiles") === -1)
-            this.panels.profiles = new WebInspector.ProfilesPanel();
-        if (hiddenPanels.indexOf("audits") === -1)
-            this.panels.audits = new WebInspector.AuditsPanel();
+        // if (hiddenPanels.indexOf("elements") === -1)
+        //     this.panels.elements = new WebInspector.ElementsPanel();
+        // if (hiddenPanels.indexOf("resources") === -1)
+        //     this.panels.resources = new WebInspector.ResourcesPanel();
+        // if (hiddenPanels.indexOf("network") === -1)
+        //     this.panels.network = new WebInspector.NetworkPanel();
+        // if (hiddenPanels.indexOf("scripts") === -1)
+        //     this.panels.scripts = new WebInspector.ScriptsPanel();
+        // if (hiddenPanels.indexOf("timeline") === -1)
+        //     this.panels.timeline = new WebInspector.TimelinePanel();
+        // if (hiddenPanels.indexOf("profiles") === -1)
+        //     this.panels.profiles = new WebInspector.ProfilesPanel();
+        // if (hiddenPanels.indexOf("audits") === -1)
+        //     this.panels.audits = new WebInspector.AuditsPanel();
         if (hiddenPanels.indexOf("console") === -1)
             this.panels.console = new WebInspector.ConsolePanel();
     },
@@ -456,20 +456,19 @@ WebInspector.PlatformFlavor = {
 
 WebInspector.loaded = function()
 {
-    if ("page" in WebInspector.queryParamsObject) {
-        var page = WebInspector.queryParamsObject.page;
+    if ("WebSocket" in window) {
         var host = "host" in WebInspector.queryParamsObject ? WebInspector.queryParamsObject.host : window.location.host;
-        WebInspector.socket = new WebSocket("ws://" + host + "/devtools/page/" + page);
+        WebInspector.socket = new WebSocket("ws://" + host + "/enspector");
         WebInspector.socket.onmessage = function(message) { InspectorBackend.dispatch(message.data); }
         WebInspector.socket.onerror = function(error) { console.error(error); }
         WebInspector.socket.onopen = function() {
             InspectorFrontendHost.sendMessageToBackend = WebInspector.socket.send.bind(WebInspector.socket);
             WebInspector.doLoadedDone();
         }
-        return;
+    } else {
+	// browser does not support websockets
+	addStatus("sorry, your browser does not support websockets.");
     }
-    WebInspector.WorkerManager.loaded();
-    WebInspector.doLoadedDone();
 }
 
 WebInspector.doLoadedDone = function()
