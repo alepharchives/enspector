@@ -1,0 +1,7 @@
+QuickStart
+
+$ rebar get-deps
+$ rebar compile
+$ ./start.sh
+
+Open http://localhost:8080/static/inspector.html
