@@ -5,3 +5,7 @@ $ rebar compile
 $ ./start.sh
 
 Open http://localhost:8080/static/inspector.html
+
+References
+1 Webkit Remote Debugging Protocol
+  http://code.google.com/chrome/devtools/docs/remote-debugging.html
