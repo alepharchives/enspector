@@ -5,6 +5,13 @@
 -record(evaluationRequest, {expression, objectGroup, includeCommandLineAPI}).
 -record(remoteObject, {id, type, className, description, hasChildren}).
 
+handle_command(<<"evaluate">>, Params) ->
+    Exp = proplists:get_value(<<"expression">>, Params),
+    InCmdlAPI = proplists:get_value(<<"includeCommandLineAPI">>, Params),
+    ObjGroup = proplists:get_value(<<"objectGroup">>, Params),
+    DoNotPauseOnExceptions = proplists:get_value(<<"doNotPauseOnExceptions">>, Params),
+    evaluateAndWrap(Exp, ObjGroup, InCmdlAPI).
+
 evaluate(Req) when is_list(Req) ->
     evaluate(parse(Req));
 evaluate(#evaluationRequest{expression=Exp, objectGroup=Og,
@@ -37,8 +44,8 @@ evaluateAndWrap(Exp, ObjectGroup, InjectCommandLineAPI) ->
             {struct, [{<<"wasThrown">>, true},
                       {<<"result">>, wrapException(E, T)}]}
     end.
-            
-            
+
+
 wrapObject(Value, ObjectGroup) when is_number(Value) ->
     Description = describe(Value),
     json(#remoteObject{type=number, description=Description});

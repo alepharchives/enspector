@@ -29,36 +29,8 @@ websocket_handle(tick, Req, State) ->
     {reply, <<"Tick">>, Req, State, hibernate};
 websocket_handle({websocket, Msg}, Req, State) ->
     io:format("pid: ~p: wh ws handle: ~n~p~n", [self(),Msg]),
-    Reply = dispatch(Msg),
+    Reply = enspector_backend:dispatch(Msg),
     {reply, Reply, Req, State, hibernate}.
-
-dispatch(Msg) ->
-    {Method, Params, Id} = parse(Msg),
-    dispatch(Method, Params, Id).
 
 websocket_terminate(_Reason, _Req, _State) ->
     ok.
-
-parse(Msg) ->
-    {struct, List} = mochijson2:decode(Msg),
-    Method = proplists:get_value(<<"method">>, List),
-    Params =
-        case proplists:get_value(<<"params">>, List) of
-            {struct, Xs} -> Xs;
-            undefined -> []
-        end,
-    Id = proplists:get_value(<<"id">>, List),
-    {Method, Params, Id}.
-
-dispatch(<<"Console.enable">>, [], Id) ->
-    pack_response(Id, ok);
-dispatch(<<"Runtime.evaluate">>, Params, Id) ->
-    Result = enspector_runtime:evaluate(Params),
-    pack_response(Id, Result);
-dispatch(_, _, Id) ->
-    pack_response(Id, unimplemented).
-
--spec pack_response(CallId :: integer(), Result::term()) -> ok.
-pack_response(CallId, Result) ->
-    Json = mochijson2:encode({struct, [{<<"id">>, CallId}, {<<"result">>, Result}]}),
-    iolist_to_binary(Json).
