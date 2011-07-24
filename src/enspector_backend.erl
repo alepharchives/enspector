@@ -20,7 +20,7 @@ dispatch(Msg) ->
                         {'EXIT', Error} ->
                             log_warning("Failed handling command: ~p:~p~n",
                                        [Module, Method]),
-                            send_response(Id, true);
+                            send_response(Id, Error);
                         Result ->
                             case return_encoder(Domain, Method) of
                                 none ->

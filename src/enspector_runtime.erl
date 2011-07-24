@@ -31,8 +31,8 @@ eval(B) when is_binary(B) ->
 eval(S) when is_list(S) ->
     {ok, Scanned, _} = erl_scan:string(S++"."),
     {ok, Parsed} = erl_parse:parse_exprs(Scanned),
+    io:format("eval: ~p~n", [Parsed]),
     {value, Value, _} = erl_eval:exprs(Parsed, []),
-    io:format("eval: ~p~n", [Value]),
     Value.
 
 evaluateAndWrap(Exp, ObjectGroup, InjectCommandLineAPI) ->
@@ -69,12 +69,13 @@ json(R) when is_record(R, remoteObject) ->
     {struct, Fs}.
 
 wrapException(Exception, Type) ->
-    Desc = list_to_binary("[ Exception: " ++ describe(Exception) ++ " ]"),
+    Desc = lists:flatten(io_lib:format("[ Exception: ~p ]",
+                                       [describe(Exception)])),
     json(#remoteObject{
             className=Type,
             hasChildren=false,
             type=object,
-            description=Desc}).
+            description=list_to_binary(Desc)}).
 
 object_id(Value) ->
     "not implemented".
