@@ -41,8 +41,9 @@ evaluateAndWrap(Exp, ObjectGroup, InjectCommandLineAPI) ->
             {struct, [
                       {<<"result">>, wrapObject(Value, ObjectGroup)}]}
     catch T:E ->
+            StackTrace = erlang:get_stacktrace(),
             {struct, [{<<"wasThrown">>, true},
-                      {<<"result">>, wrapException(E, T)}]}
+                      {<<"result">>, wrapException(E, T, StackTrace)}]}
     end.
 
 
@@ -68,13 +69,12 @@ json(R) when is_record(R, remoteObject) ->
     Fs = lists:filter(fun({_,Y}) -> Y /= undefined end, Fields),
     {struct, Fs}.
 
-wrapException(Exception, Type) ->
-    Desc = lists:flatten(io_lib:format("[ Exception: ~p ]",
-                                       [describe(Exception)])),
+wrapException(Exception, Type, StackTrace) ->
+    Desc = lists:flatten(io_lib:format("[ Exception: ~p ~n~p]",
+                                       [describe(Exception), StackTrace])),
     json(#remoteObject{
             className=Type,
-            hasChildren=false,
-            type=object,
+            type=string,
             description=list_to_binary(Desc)}).
 
 object_id(Value) ->
