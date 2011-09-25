@@ -1,0 +1,5 @@
+*.beam
+*.app
+src/*.inc
+deps/
+erl_crash.dump
