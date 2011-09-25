@@ -10,7 +10,7 @@ init({_Any, http}, Req, []) ->
     io:format("wh init~n"),
     case cowboy_http_req:header('Upgrade', Req) of
         {undefined, Req2} -> {ok, Req2, undefined};
-        {<<"WebSocket">>, _Req2} -> {upgrade, protocol, cowboy_http_websocket}
+        {<<"websocket">>, _Req2} -> {upgrade, protocol, cowboy_http_websocket}
     end.
 
 handle(Req, State) ->
@@ -27,10 +27,10 @@ websocket_init(_Any, Req, []) ->
 
 websocket_handle(tick, Req, State) ->
     {reply, <<"Tick">>, Req, State, hibernate};
-websocket_handle({websocket, Msg}, Req, State) ->
+websocket_handle({text, Msg}, Req, State) ->
     io:format("pid: ~p: wh ws handle: ~n~p~n", [self(),Msg]),
     Reply = enspector_backend:dispatch(Msg),
-    {reply, Reply, Req, State, hibernate}.
+    {reply, {text, Reply}, Req, State, hibernate}.
 
 websocket_terminate(_Reason, _Req, _State) ->
     ok.

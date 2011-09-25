@@ -5,13 +5,6 @@
 -record(evaluationRequest, {expression, objectGroup, includeCommandLineAPI}).
 -record(remoteObject, {id, type, className, description, hasChildren}).
 
-handle_command(<<"evaluate">>, Params) ->
-    Exp = proplists:get_value(<<"expression">>, Params),
-    InCmdlAPI = proplists:get_value(<<"includeCommandLineAPI">>, Params),
-    ObjGroup = proplists:get_value(<<"objectGroup">>, Params),
-    DoNotPauseOnExceptions = proplists:get_value(<<"doNotPauseOnExceptions">>, Params),
-    evaluateAndWrap(Exp, ObjGroup, InCmdlAPI).
-
 evaluate(Req) when is_list(Req) ->
     evaluate(parse(Req));
 evaluate(#evaluationRequest{expression=Exp, objectGroup=Og,
@@ -29,7 +22,7 @@ parse(Req) ->
 eval(B) when is_binary(B) ->
     eval(binary_to_list(B));
 eval(S) when is_list(S) ->
-    {ok, Scanned, _} = erl_scan:string(S++"."),
+    {ok, Scanned, _} = erl_scan:string(S),
     {ok, Parsed} = erl_parse:parse_exprs(Scanned),
     io:format("eval: ~p~n", [Parsed]),
     {value, Value, _} = erl_eval:exprs(Parsed, []),

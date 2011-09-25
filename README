@@ -7,5 +7,7 @@ $ ./start.sh
 Open http://localhost:8080/static/inspector.html
 
 References
-1 Webkit Remote Debugging Protocol
+- Webkit Remote Debugging Protocol
   http://code.google.com/chrome/devtools/docs/remote-debugging.html
+- WebKit Inspector.json
+  http://trac.webkit.org/browser/trunk/Source/WebCore/inspector/Inspector.json

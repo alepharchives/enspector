@@ -15,12 +15,12 @@ generate(File) ->
     ok = file:write(Out, <<"\n\n\n">>),
 
     lists:foreach(fun(P) -> file:write(Out, P) end, Params),
-    ok = file:write(Out, <<"parse_params(_, _, _) ->
-    {error, unknown_params}.\n\n\n">>),
+    ok = file:write(Out, <<"parse_params(D, M, P) ->
+    {error, {unknown_params, D, M, P}}.\n\n\n">>),
 
     lists:foreach(fun(R) -> file:write(Out, R) end, Returns),
-    ok = file:write(Out, <<"return_encoder(_, _) ->
-    {error, unknown_return}.\n\n\n">>),
+    ok = file:write(Out, <<"return_encoder(D, M) ->
+    {error, {unknown_return, D, M}}.\n\n\n">>),
 
     ok = file:close(Out).
 
